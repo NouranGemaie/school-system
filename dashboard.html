@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم - نظام إدارة المدرسة</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-100 font-sans text-slate-800">
+
+  <!-- Backdrop for Mobile Sidebar -->
+  <div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/50 z-40 hidden md:hidden"></div>
+
+  <!-- Mobile Top Bar -->
+  <div class="md:hidden bg-slate-900 text-white p-4 flex justify-between items-center sticky top-0 z-30 shadow">
+    <div class="flex items-center gap-2 text-emerald-400 font-bold">
+      <i class="fa-solid fa-school text-xl"></i>
+      <span>نظام المدرسة</span>
+    </div>
+    <button id="menuToggle" class="text-white text-2xl focus:outline-none p-1">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </div>
+
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed md:static inset-y-0 right-0 z-50 w-64 bg-slate-900 text-white flex flex-col justify-between p-4 transform translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+      <div>
+        <div class="flex items-center justify-between text-emerald-400 font-bold text-xl p-2 mb-8 border-b border-slate-800">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-school text-2xl"></i>
+            <span>نظام المدرسة</span>
+          </div>
+          <!-- Close button for mobile -->
+          <button id="menuClose" class="md:hidden text-slate-400 hover:text-white text-xl">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <nav class="space-y-2">
+          <a href="#" class="flex items-center gap-3 p-3 rounded-lg bg-emerald-600 text-white font-medium">
+            <i class="fa-solid fa-chart-pie"></i> الرئيسية
+          </a>
+          <a href="#" class="flex items-center gap-3 p-3 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition">
+            <i class="fa-solid fa-clipboard-user"></i> تسجيل الحضور
+          </a>
+          <a href="#" class="flex items-center gap-3 p-3 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition">
+            <i class="fa-solid fa-graduation-cap"></i> الدرجات والامتحانات
+          </a>
+        </nav>
+      </div>
+      <div class="text-xs text-slate-500 text-center border-t border-slate-800 pt-4">
+        لوحة التحكم v1.0
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto p-4 md:p-8 w-full">
+      <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+        <div>
+          <h1 class="text-xl md:text-2xl font-bold text-slate-900">نظام إدارة الحضور والدرجات</h1>
+          <p class="text-slate-500 text-xs md:text-sm mt-1">عرض سريع لإحصائيات اليوم وتحديث البيانات</p>
+        </div>
+        <button id="fetchDataBtn" class="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition shadow">
+          <i class="fa-solid fa-rotate"></i> تحديث البيانات
+        </button>
+      </header>
+
+      <!-- Stat Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+          <div>
+            <p class="text-xs md:text-sm font-medium text-slate-500">إجمالي الطلاب</p>
+            <h3 class="text-2xl md:text-3xl font-bold text-slate-800 mt-1" id="totalStudents">--</h3>
+          </div>
+          <div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-lg md:text-xl">
+            <i class="fa-solid fa-users"></i>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+          <div>
+            <p class="text-xs md:text-sm font-medium text-slate-500">الحاضرون اليوم</p>
+            <h3 class="text-2xl md:text-3xl font-bold text-emerald-600 mt-1" id="presentCount">--</h3>
+          </div>
+          <div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-lg md:text-xl">
+            <i class="fa-solid fa-user-check"></i>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+          <div>
+            <p class="text-xs md:text-sm font-medium text-slate-500">الأعذار والغياب</p>
+            <h3 class="text-2xl md:text-3xl font-bold text-amber-600 mt-1" id="excusedCount">--</h3>
+          </div>
+          <div class="w-10 h-10 md:w-12 md:h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-lg md:text-xl">
+            <i class="fa-solid fa-user-clock"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report Section -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 md:p-6">
+        <h2 class="text-base md:text-lg font-bold text-slate-800 mb-4">تقرير حضور الطالب رقم (1)</h2>
+        <div id="reportContainer" class="bg-slate-50 p-4 rounded-lg border border-slate-200 text-slate-600 text-sm">
+          جاري تحميل التقرير من السيرفر...
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const menuClose = document.getElementById('menuClose');
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebarBackdrop');
+
+    function toggleSidebar() {
+      sidebar.classList.toggle('translate-x-full');
+      backdrop.classList.toggle('hidden');
+    }
+
+    menuToggle.addEventListener('click', toggleSidebar);
+    menuClose.addEventListener('click', toggleSidebar);
+    backdrop.addEventListener('click', toggleSidebar);
+
+    async function loadStudentReport() {
+      const container = document.getElementById('reportContainer');
+      try {
+        const response = await fetch('/api/attendance/report/1?start_date=2026-10-01&end_date=2026-10-31');
+        const data = await response.json();
+
+        if (data.success && data.report) {
+          const r = data.report;
+          container.innerHTML = `
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+              <div class="bg-white p-3 rounded border text-xs md:text-sm">اسم الطالب: <br><span class="font-bold text-slate-800">${r.student_name || 'نوران جميل'}</span></div>
+              <div class="bg-white p-3 rounded border text-xs md:text-sm">أيام الحضور: <br><span class="font-bold text-emerald-600">${r.days_present}</span></div>
+              <div class="bg-white p-3 rounded border text-xs md:text-sm">أيام الغياب: <br><span class="font-bold text-rose-600">${r.days_unexcused_absent}</span></div>
+              <div class="bg-white p-3 rounded border text-xs md:text-sm">الأعذار المقبولة: <br><span class="font-bold text-amber-600">${r.days_excused_absent}</span></div>
+            </div>
+          `;
+          document.getElementById('totalStudents').innerText = "1";
+          document.getElementById('presentCount').innerText = r.days_present;
+          document.getElementById('excusedCount').innerText = r.days_excused_absent;
+        } else {
+          container.innerText = "تعذر جلب البيانات أو لا توجد سجلات.";
+        }
+      } catch (err) {
+        container.innerText = "حدث خطأ أثناء الاتصال بالسيرفر.";
+      }
+    }
+
+    document.getElementById('fetchDataBtn').addEventListener('click', loadStudentReport);
+    window.onload = loadStudentReport;
+  </script>
+</body>
+</html>
