@@ -18,3 +18,12 @@ const examRoutes = require('./routes/examRoutes');
 app.use('/api/exams', examRoutes);
 const userRoutes = require('./routes/userRoutes');
 app.use('/api/users', userRoutes);
+const path = require('path');
+
+// تقديم الملفات الاستاتيكية من مجلد public
+app.use(express.static(path.join(__dirname, 'public')));
+
+// توجيه المسار الرئيسي إلى صفحة اللوجن
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
