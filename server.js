@@ -1,29 +1,17 @@
 const express = require('express');
-const cors = require('cors');
-const attendanceRoutes = require('./routes/attendanceRoutes');
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-app.use(express.static('public'));
-
-// الموديلز والـ Routes
-app.use('/api/attendance', attendanceRoutes);
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
-const examRoutes = require('./routes/examRoutes');
-app.use('/api/exams', examRoutes);
-const userRoutes = require('./routes/userRoutes');
-app.use('/api/users', userRoutes);
 const path = require('path');
+const app = express();
 
-// تقديم الملفات الاستاتيكية من مجلد public
+// تقديم جميع الملفات الاستاتيكية (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname)); // احتياطاً لو الملفات موجودة في Root المشروع مباشرة
 
-// توجيه المسار الرئيسي إلى صفحة اللوجن
+// توجيه المسار الرئيسي (/) لصفحة الدخول تلقائياً
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+  res.sendFile(path.join(__dirname, 'public', 'login.html'), (err) => {
+    if (err) {
+      // لو ملف login.html برة مجلد public وفي المجلد الرئيسي مباشرة
+      res.sendFile(path.join(__dirname, 'login.html'));
+    }
+  });
 });
